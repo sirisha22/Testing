@@ -1,0 +1,205 @@
+# resources:
+#   - name: git-repo
+#     type: git
+#     source:
+#       uri: https://github.com/sirisha22/Testing.git
+#       branch: main 
+# jobs:
+#   - name: build-docker-image
+#     plan:
+#       - get: git-repo
+#         trigger: true
+#       - task: build-docker
+#         config:
+#           platform: linux
+#           image_resource:
+#             type: docker-image
+#             source: 
+#                 repository: python:3
+#           inputs:
+#             - name: git-repo
+#           run:
+#             path: sh
+#             args:
+#               - -exc
+#               - |
+#                 cd git-repo
+#                 #cp Hello-world.py .
+#                 # git clone https://github.com/sirisha22/Testing.git
+#                 # cd Testing
+#                 # docker build -t your_docker_image_name .
+#                 python3 Hello-world.py
+ 
+# resources:
+#   - name: git-repo
+#     type: git
+#     source:
+#       uri: https://github.com/sirisha22/Testing.git
+#       branch: main
+
+# jobs:
+#   - name: run-hello-world
+#     plan:
+#       - get: git-repo
+#         trigger: true
+#       - task: run-python
+#         config:
+#           platform: linux
+#           image_resource:
+#             type: docker-image
+#             source:
+#               repository: python
+#           inputs:
+#             - name: git-repo
+#           run:
+#             path: sh
+#             args:
+#               - -exc
+#               - |
+#                 cd git-repo
+#                 python Hello-world.py
+# resources:
+#   - name: git-repo
+#     type: git
+#     source:
+#       uri: https://github.com/sirisha22/Testing.git
+#       branch: main
+
+# jobs:
+#   - name: build-docker-image
+#     plan:
+#       - get: git-repo
+#         trigger: true
+#       - task: build-image
+#         config:
+#           platform: linux
+#           image_resource:
+#             type: docker-image
+#             source:
+#               repository: docker
+#           inputs:
+#             - name: git-repo
+#           run:
+#             path: sh
+#             args:
+#               - -exc
+#               - |
+#                 cd git-repo
+#                 docker build -t your_docker_image_name -f Hello-world.py .
+resources:
+  - name: git-repo
+    type: git
+    source:
+      uri: https://github.com/sirisha22/Testing.git
+      branch: main
+
+jobs:
+  - name: build-docker-image
+    plan:
+      - get: git-repo
+        trigger: true
+      - task: start-docker-daemon
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:{repository: ubuntu, tag: "latest"}
+          run:
+            path: /bin/bash
+             args:
+                - -c
+#               - -exc
+                - |
+                  cd git-repo
+                  docker build -t helloworld -f Hello-world.py .
+#                 # Check if Docker daemon is running, start it if not
+#                 if ! docker info >/dev/null 2>&1; then
+#                     dockerd &
+#                     sleep 10  # Wait for Docker daemon to start
+#                 fi
+#       - task: build-image
+#         config:
+#           platform: linux
+#           image_resource:
+#             type: docker-image
+#             source:
+#               repository: docker
+#           inputs:
+#             - name: git-repo
+#           run:
+#             path: sh
+#             args:
+#               - -exc
+#               - |
+#                 cd git-repo
+#                 docker build -t your_docker_image_name .
+# resources:
+#   - name: git-repo
+#     type: git
+#     source:
+#       uri: https://github.com/sirisha22/Testing.git
+#       branch: main
+
+# jobs:
+#   - name: build-docker-image
+#     plan:
+#       - get: git-repo
+#         trigger: true
+#       - task: build-image
+#         config:
+#           platform: linux
+#           image_resource:
+#             type: docker-image
+#             source:
+#               repository: docker
+#               tag: stable-dind  # Use a Docker-in-Docker (DinD) image
+#           inputs:
+#             - name: git-repo
+#           run:
+#             path: sh
+#             args:
+#               - -exc
+#               - |
+#                 cd git-repo
+#                 docker build -t your_docker_image_name -f Hello-world.py .
+
+# resources:
+# - name: git-repo
+#   type: git
+#   source:
+#     uri: https://github.com/sirisha22/Testing.git
+#     branch: main
+
+# jobs:
+# - name: build-docker-image
+#   plan:
+#   - get: git-repo
+#     trigger: true
+#   - task: build-docker-image
+#     config:
+#       platform: linux
+#       image_resource:
+#         type: docker-image
+#         source: {repository: ubuntu, tag: "latest"}
+#       inputs:
+#       - name: git-repo
+#       outputs:
+#       - name: built-image
+#       run:
+#         path: /bin/bash
+#         args:
+#         - -c
+#         - |
+#           cd git-repo
+#           docker build -t helloworld -f Hello-world.py .
+#           mkdir -p ../built-image
+#           docker save helloworld > ../built-image/helloworld.tar
+#   - put: built-image
+#     params:
+#       build: built-image/helloworld.tar
+
+# resources:
+# - name: built-image
+#   type: archive
+#   source:
+#     path: built-image

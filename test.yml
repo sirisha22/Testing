@@ -1,0 +1,39 @@
+resources:
+  - name: git-repo
+    type: git
+    source:
+      uri: https://github.com/sirisha22/Testing.git
+      branch: main 
+jobs:
+  - name: build-docker-image
+    plan:
+      - get: git-repo
+        trigger: true
+      - task: build-docker
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: {repository: karlkfi/concourse-dcind}
+          inputs:
+            - name: git-repo
+          run:
+            path: entrypoint.sh
+            args:
+              - bash
+              - -exc
+              - |
+                # apt-get update
+                # apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+                # curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+                # echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+                # apt-get update
+                # apt-get install -y docker-ce docker-ce-cli containerd.io
+                # docker --version
+                cd git-repo
+                #cp Hello-world.py .
+                # git clone https://github.com/sirisha22/Testing.git
+                # cd Testing
+                docker build -t hellotest .
+                #python3 Hello-world.py
